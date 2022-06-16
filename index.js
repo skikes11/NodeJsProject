@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
-const userRoute = require("./routes/user");
+const myRouter = require("./routes");
 
 dotenv.config();    
 //connect database
@@ -20,7 +20,7 @@ app.use(cors());
 app.use(morgan("common"));  
 
 // API
-app.use("/users", userRoute);   
+app.use("/api", myRouter);   
 // app.use("/userInfor", userInforRoute);
         
 app.listen(8000, ()=>{

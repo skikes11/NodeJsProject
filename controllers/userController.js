@@ -3,6 +3,9 @@ const {UserAccount} = require("../model/userModel");
 const registerValidation = require("./validation");
 const bcrypt = require('bcrypt');
 const { boolean } = require("joi");
+const jwt = require("jsonwebtoken");
+
+
 const userController = {
     // Add User
     addUser: async(req,res)=>{
@@ -58,7 +61,10 @@ const userController = {
         try{
             const user = await UserAccount.findOne({username: req.body.username});
             if(!user){
-                res.status(404).json("Invalid username!");
+                res.status(404).json({
+                    "success" : false, 
+                    "message" : "username or password not match"
+                });
             }else{
                 const checkPass = await bcrypt.compare(req.body.password, user.password);
                     if(!checkPass){
@@ -67,9 +73,21 @@ const userController = {
                             "message" : "username or password not match"
                         });
                     }else{
+                         const tokenAccess = jwt.sign({
+                            id: user._id,
+                            role: user.role
+                         }, process.env.JWT_ACCESS_KEY,{        
+                            expiresIn: "2h"
+                         });   
+
+                        const {password,username, ...others} = user._doc;
+                        const fullToken = `Bearer ${tokenAccess}`
                         res.status(200).json({
                             "success" : true,
-                            "data" : getUserInfo(user)
+                            "data" : {
+                            ...others,
+                            fullToken
+                            }
                         });
                     }    
             }   
@@ -84,13 +102,14 @@ const userController = {
         }
     }
 };
+
+
 // http code
 module.exports = userController;
 
 // {
 //     "success" : true/false
 //     "data" : { // if true
-
 //     }
 //     "message" : "" //if false
 // }
