@@ -1,6 +1,8 @@
+const { hashSync } = require("bcryptjs");
 const {UserAccount} = require("../model/userModel");
 const registerValidation = require("./validation");
-
+const bcrypt = require('bcrypt');
+const { boolean } = require("joi");
 const userController = {
     // Add User
     addUser: async(req,res)=>{
@@ -9,26 +11,30 @@ const userController = {
       //   return res.status(400).send(error);
      //   }else{
         try{
-            const {username, password, name, dob, email, phone} = req.body;
-            //const salt = await bcrypt.genSalt(10);
-            //const hashPass = await bcrypt.hash(password, salt);
-            const newUser = new UserAccount({
-               username: username,
-               password: hashPass,
-               name: name,
-               profile: {
-                   dob: dob,
-                   email : email,
-                   phone : phone,
-               }
-            });
+            // const {username, password, name, dob, email, phone} = req.body;
+             const salt = await bcrypt.genSalt(10);
+             const hashPass = await bcrypt.hash(req.body.password, salt);
+             console.log(hashPass);
+            const newUser = await new UserAccount(req.body);
+             newUser.password = hashPass;
              await newUser.save();   
             res.status(200).json(newUser);
         }catch(err){
            res.status(500).json(err);
         }
   //  }
-
+/*
+  {
+    username: username,
+    password: password,
+    name: name,
+    profile: {
+        dob: dob,
+        email : email,
+        phone : phone
+    }
+ }
+*/
     },
     getAllUser : async(req,res)=>{
         try{
@@ -47,7 +53,44 @@ const userController = {
         }catch(err){
            res.status(500).json(err);
         }
+    },
+    loginUser : async(req,res) =>{
+        try{
+            const user = await UserAccount.findOne({username: req.body.username});
+            if(!user){
+                res.status(404).json("Invalid username!");
+            }else{
+                const checkPass = await bcrypt.compare(req.body.password, user.password);
+                    if(!checkPass){
+                        res.status(404).json({
+                            "success" : false, 
+                            "message" : "username or password not match"
+                        });
+                    }else{
+                        res.status(200).json({
+                            "success" : true,
+                            "data" : getUserInfo(user)
+                        });
+                    }    
+            }   
+
+        }catch(err){
+                console.log("'err'");
+                res.status(400).json({
+                    "success" : false,
+                    "message" : err
+                }); 
+                 
+        }
     }
 };
-
+// http code
 module.exports = userController;
+
+// {
+//     "success" : true/false
+//     "data" : { // if true
+
+//     }
+//     "message" : "" //if false
+// }
