@@ -8,6 +8,27 @@ const userValidateRegister = require("../controllers/validation/userValidateRegi
 //Add User 
 userRouter.post("/", userValidateRegister.validateUserRegister, userController.addUser);
 
+//AddRole
+userRouter.post("/r2", async(req,res)=>{
+    const user = await middlewareController.verifyToken(req,res)
+    console.log(user)
+    if (!user){
+        return res.status(401).json({
+            "success":false,
+            "message": "authentication fail"
+        })
+    }
+
+   if (user.role == "admin"){
+        userController.addRole(req,res)
+   }else{
+        res.status(403).json({
+            "success":false,
+            "message": "permission denied"
+        })
+   }
+});
+
 //Get All User (auth: ADMIN)
 userRouter.get("/", async (req, res) => {
     const user = await middlewareController.verifyToken(req,res)
@@ -28,6 +49,29 @@ userRouter.get("/", async (req, res) => {
         })
     }
 });
+
+//Get All Role (auth: ADMIN)
+userRouter.get("/r1", async (req, res) => {
+    const user = await middlewareController.verifyToken(req,res)
+    console.log(user)
+    if (!user){
+        return res.status(401).json({
+            "success":false,
+            "message": "authentication fail"
+        })
+    }
+
+    if (user.role== "admin"){
+        userController.getAllRole(req,res);
+    }else{
+        res.status(403).json({
+            "success":false,
+            "message": "permission deny"
+        })
+    }
+});
+
+
 //UPDATE USER BY ID (auth : ADMIN)
 userRouter.put("/v2/:id", async(req,res)=>{
     const user = await middlewareController.verifyToken(req,res);
@@ -111,10 +155,12 @@ userRouter.put("/:id",async(req,res)=>{
 });
 
 //CHANGE USER PASSWORD
-userRouter.put("/v1/v3", async(req,res)=>{
+userRouter.put("/u1/pass", async(req,res)=>{
     const user = await middlewareController.verifyToken(req,res);
-    console.log(user);
+    console.log("halo" + user);
+  
     if(user){
+        console.log("get in controller");
         userController.ChangeUserPassword(req,res,user.id);
     }else{
         res.status(401).json({

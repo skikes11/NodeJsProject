@@ -15,8 +15,9 @@ const userAccountSchema = new mongoose.Schema({
             require:true
         },
         role: {
-            type: String,
-            default: "user"
+            type: mongoose.Schema.Types.ObjectId,
+            ref : 'UserRole',
+            default : null
         },
         active :{
             type : Boolean,
@@ -38,8 +39,15 @@ const userAccountSchema = new mongoose.Schema({
         }
 });
 
+const userRoleSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    }
+})
+
 
 let UserAccount = mongoose.model("UserAccount", userAccountSchema);
+let UserRole = mongoose.model("UserRole", userRoleSchema);
 
-
-module.exports = {UserAccount};
+module.exports = {UserAccount, UserRole};
