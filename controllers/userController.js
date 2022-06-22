@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const { boolean } = require("joi");
 const jwt = require("jsonwebtoken");
 const e = require("express");
-
+const logger = require("../controllers/logger/winstonLogger");
+const EmailSender = require("../controllers/email/emailSender");
 
 const userController = {
     addUser: async(req,res)=>{
@@ -13,12 +14,13 @@ const userController = {
              const hashPass = await bcrypt.hash(req.body.password, salt);
              console.log(hashPass);
              const newUser = await new UserAccount({
-                name : req.body.name,
+                email : req.body.email,
+                avatar : req.body.avatar,
                 username : req.body.username,
                 password : hashPass,
                 phone : req.body.phone,
                 dob : req.body.dob,
-                email : req.body.email
+                
              });
              
              if(!newUser.role){
@@ -27,6 +29,7 @@ const userController = {
              newUser.role = Iuser._id;
              console.log(Iuser._id);      
              }
+             EmailSender.sendEmail(res,newUser.email,"Active Your Account","Click here to activate your account");
              await newUser.save();   
             res.status(200).json(newUser);
         }catch(err){
@@ -57,6 +60,10 @@ const userController = {
                 "success" : false,
                 "message" : "did not found any userRole"
            });
+           logger.info({
+            "success" : false,
+            "message" : "did not found any userRole"
+           })
         }
     },
     getAllUser : async(req,res)=>{
@@ -73,6 +80,10 @@ const userController = {
                 "success" : false,
                 "message" : "did not found any user"
            });
+           logger.info({
+            "success" : false,
+            "message" : "did not found any user"
+           })
         }
     },
     deleteUserByID : async(res,id)=>{
@@ -238,6 +249,16 @@ const userController = {
                             fullToken
                             }
                         });
+
+
+                        logger.info({
+                            "success" : true,
+                            "data" : {
+                            ...others,
+                            fullToken
+                            }
+                           })
+
                     }
                 }    
             }   

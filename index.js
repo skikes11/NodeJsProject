@@ -14,7 +14,7 @@ mongoose.connect((process.env.MONGODB_URL),()=>{
 });
 
 
-
+app.use('/static', express.static('public'))
 app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan("common"));  

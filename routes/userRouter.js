@@ -5,6 +5,7 @@ const middlewareController = require("../controllers/middlewareController");
 const { getAllUser } = require("../controllers/userController");
 const userController = require("../controllers/userController");
 const userValidateRegister = require("../controllers/validation/userValidateRegister");
+const logger = require("../controllers/logger/winstonLogger");
 //Add User 
 userRouter.post("/", userValidateRegister.validateUserRegister, userController.addUser);
 
@@ -34,10 +35,14 @@ userRouter.get("/", async (req, res) => {
     const user = await middlewareController.verifyToken(req,res)
     console.log(user)
     if (!user){
+        logger.info({
+            "success" : false,
+            "message" : "did not found any user"
+           });
         return res.status(401).json({
             "success":false,
             "message": "authentication fail"
-        })
+        });
     }
 
     if (user.role == "admin"){
@@ -157,8 +162,7 @@ userRouter.put("/:id",async(req,res)=>{
 //CHANGE USER PASSWORD
 userRouter.put("/u1/pass", async(req,res)=>{
     const user = await middlewareController.verifyToken(req,res);
-    console.log("halo" + user);
-  
+    
     if(user){
         console.log("get in controller");
         userController.ChangeUserPassword(req,res,user.id);

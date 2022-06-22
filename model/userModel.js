@@ -2,11 +2,16 @@ const { defaults } = require("joi");
 const mongoose = require("mongoose");
 
 const userAccountSchema = new mongoose.Schema({
-        username: {
+        email:{
+            type: String,
+            required: true
+        
+        },
+        name: {
             type: String,
             require:true
         },
-        name: {
+        avatar: {
             type: String,
             require:true
         },
@@ -21,7 +26,7 @@ const userAccountSchema = new mongoose.Schema({
         },
         active :{
             type : Boolean,
-            default: true     
+            default: false     
         },
         profile: {
             dob: {
@@ -32,10 +37,7 @@ const userAccountSchema = new mongoose.Schema({
                 type: String,
          //       default : "null"
             },
-            email:{
-                type: String,
-            //    default : "null"
-            }
+           
         }
 });
 
