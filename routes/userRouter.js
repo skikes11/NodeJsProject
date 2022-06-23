@@ -7,7 +7,7 @@ const userController = require("../controllers/userController");
 const userValidateRegister = require("../controllers/validation/userValidateRegister");
 const logger = require("../controllers/logger/winstonLogger");
 //Add User 
-userRouter.post("/", userValidateRegister.validateUserRegister, userController.addUser);
+userRouter.post("/", userValidateRegister.validateUserregister, userController.addUser);
 
 //AddRole
 userRouter.post("/r2", async(req,res)=>{
@@ -149,7 +149,7 @@ userRouter.put("/:id",async(req,res)=>{
         })
     }else{
     if(user.role == "admin"){
-        userController.BlockORUnblockUserbyID(res, req.params.id);
+        userController.activeOrBlockUserAccountByID(res, req.params.id);
     }else{
         res.status(403).json({
             "success":false,

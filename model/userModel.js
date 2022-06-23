@@ -21,7 +21,7 @@ const userAccountSchema = new mongoose.Schema({
         },
         role: {
             type: mongoose.Schema.Types.ObjectId,
-            ref : 'UserRole',
+            ref : 'Userrole',
             default : null
         },
         active :{
@@ -41,7 +41,7 @@ const userAccountSchema = new mongoose.Schema({
         }
 });
 
-const userRoleSchema = new mongoose.Schema({
+const userroleSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -50,6 +50,6 @@ const userRoleSchema = new mongoose.Schema({
 
 
 let UserAccount = mongoose.model("UserAccount", userAccountSchema);
-let UserRole = mongoose.model("UserRole", userRoleSchema);
+let Userrole = mongoose.model("Userrole", userroleSchema);
 
-module.exports = {UserAccount, UserRole};
+module.exports = {UserAccount, Userrole};

@@ -1,7 +1,8 @@
 const nodemailer = require("nodemailer");
 const {OAuth2Client} = require("google-auth-library");
 const ADMIN_EMAIL_ADDRESS = "highskikes11@gmail.com";
-
+const dotenv = require("dotenv");
+dotenv.config();  
 // Khởi tạo OAuth2Client với Client ID và Client Secret 
 const myOAuth2Client = new OAuth2Client(
     process.env.GOOGLE_MAILER_CLIENT_ID,
@@ -13,7 +14,7 @@ myOAuth2Client.setCredentials({
 })
 
 
-async function sendEmail(res,email,subject,content){
+const sendEmail =  async (res,email,subject,content) =>{
   try {
     /**
      * Lấy AccessToken từ RefreshToken (bởi vì Access Token cứ một khoảng thời gian ngắn sẽ bị hết hạn)
@@ -47,7 +48,7 @@ async function sendEmail(res,email,subject,content){
     await transport.sendMail(mailOptions)
 
     // Không có lỗi gì thì trả về success
-    res.status(200).json({ message: 'Email sent successfully.' })
+    console.log("send email successfully")
   } catch (error) {
     // Có lỗi thì các bạn log ở đây cũng như gửi message lỗi về phía client
     console.log(error)

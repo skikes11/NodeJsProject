@@ -24,16 +24,16 @@ app.use(express.json())
  */
 const APP_PORT = 3000
 const APP_HOST = 'localhost'
-const GOOGLE_MAILER_CLIENT_ID = "1026373301857-j493jqie87afsvsqp4uda9mie7tphhse.apps.googleusercontent.com"
-const GOOGLE_MAILER_CLIENT_SECRET = "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"
-const GOOGLE_MAILER_REFRESH_TOKEN = "1//04L47DZUM8bEYCgYIARAAGAQSNwF-L9IruXkFn_E9RtAW2wz47NAIKiu22X8iW1E09AIdYYNiFWPNk0VyIueD4bmW0TYFipaF1Rw"
-const ADMIN_EMAIL_ADDRESS = "highskikes11@gmail.com"
-
+const GOOGLE_MAILER_CLIENT_ID = '1026373301857-j493jqie87afsvsqp4uda9mie7tphhse.apps.googleusercontent.com'
+const GOOGLE_MAILER_CLIENT_SECRET = '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'
+const GOOGLE_MAILER_REFRESH_TOKEN = '1//04Hy-IYpaXJ1rCgYIARAAGAQSNwF-L9Irsclsc2jpvVuXW-XuCxva9RCtc9PYVSdfulZN62VK33Cjxg0XL2SN531zDcs_DB0pPY4'
+const ADMIN_EMAIL_ADDRESS = 'highskikes11@gmail.com'
+const URL_API = "https://developers.google.com/oauthplayground"
 // Khởi tạo OAuth2Client với Client ID và Client Secret 
 const myOAuth2Client = new OAuth2Client(
   GOOGLE_MAILER_CLIENT_ID,
   GOOGLE_MAILER_CLIENT_SECRET
-)
+);
 // Set Refresh Token vào OAuth2Client Credentials
 myOAuth2Client.setCredentials({
   refresh_token: GOOGLE_MAILER_REFRESH_TOKEN
@@ -44,7 +44,7 @@ app.post('/email/send', async (req, res) => {
   try {
     // Lấy thông tin gửi lên từ client qua body
     const { email, subject, content } = req.body
-    if (!email || !subject || !content) throw new Error('Please provide email, subject and content!')
+    if (!email || !subject || !content) throw new error('Please provide email, subject and content!')
 
     /**
      * Lấy AccessToken từ RefreshToken (bởi vì Access Token cứ một khoảng thời gian ngắn sẽ bị hết hạn)

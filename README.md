@@ -1,2 +1,9 @@
 mongodb+srv://skikes11:123456bo@cluster0.lqjfnhw.mongodb.net/?retryWrites=true&w=majority
 mongodb://localhost:27017/testDB
+MONGODB_URL= mongodb://localhost:27017/ABC
+JWT_ACCESS_KEY = S@#TEFWDSG$DSUVJZAEWV23risy4euafwusfasfas
+GOOGLE_MAILER_CLIENT_ID = 1026373301857-j493jqie87afsvsqp4uda9mie7tphhse.apps.googleusercontent.com
+GOOGLE_MAILER_CLIENT_SECRET = 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
+GOOGLE_MAILER_REFRESH_TOKEN = 1//04Hy-IYpaXJ1rCgYIARAAGAQSNwF-L9Irsclsc2jpvVuXW-XuCxva9RCtc9PYVSdfulZN62VK33Cjxg0XL2SN531zDcs_DB0pPY4
+ACCESS_TOKEN_EMAILSENDER =  ya29.a0ARrdaM9XK9HRIXnz2Jodiy4SYzJRiar6ZKRfhsnOlTmQ2HLqzyOq1MYnPFjZAADxR9s8bhjUracjbdb054Z708k0pKW8kFOrSZHxsYbO0JyZuolbTGIvE4ibOOXcMWkkCPO0WWSqCg0YhboOFcwwOmCPkiPm
+
