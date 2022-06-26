@@ -1,13 +1,56 @@
 const userRouter = require("express").Router();
-
-const { verifyTokenAndCheckAdminAuth } = require("../controllers/middlewareController");
 const middlewareController = require("../controllers/middlewareController");
 const { getAllUser } = require("../controllers/userController");
 const userController = require("../controllers/userController");
 const userValidateRegister = require("../controllers/validation/userValidateRegister");
 const logger = require("../controllers/logger/winstonLogger");
+
+
+
+//User login View
+userRouter.get("/login",function(req,res){
+    res.render("index");
+})
+
+//Forgot Password View
+userRouter.get("/forgot-password",function(req,res){
+    res.render("forgotPassword");
+})
+
+// Register View
+
+userRouter.get("/register",function(req,res){
+    res.render("register");
+})
+
+
+// Reset Password View
+userRouter.get("/reset-password",function(req,res){
+    res.render("resetPassword");
+})
+
+
+// Registration complete view
+
+
+userRouter.get("/registration-completed",function(req,res){
+    res.render("registrationComplete");
+})
+
+
+// Verify Account
+userRouter.get("/verify-account-completed",function(req,res){
+    res.render("verifyAccountCompleted");
+})
+
+
+
+
 //Add User 
-userRouter.post("/", userValidateRegister.validateUserregister, userController.addUser);
+userRouter.post("/addUser", async(req,res)=>{
+    console.log(req.body);
+    await userController.addUser(req,res);
+});
 
 //AddRole
 userRouter.post("/r2", async(req,res)=>{

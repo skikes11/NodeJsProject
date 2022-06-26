@@ -14,6 +14,16 @@ mongoose.connect((process.env.MONGODB_URL),()=>{
 });
 
 
+
+//Static files
+app.use(express.static(__dirname + '/public'));
+
+// cau hinh engine ejs
+app.set("view engine", "ejs");
+app.set("views","./view");
+
+
+
 app.use('/static', express.static('public'))
 app.use(bodyParser.json());
 app.use(cors());

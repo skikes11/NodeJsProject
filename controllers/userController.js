@@ -1,6 +1,6 @@
 const { hashSync } = require("bcryptjs");
 const { UserAccount, Userrole } = require("../model/userModel");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { boolean } = require("joi");
 const jwt = require("jsonwebtoken");
 const e = require("express");
@@ -9,11 +9,20 @@ const EmailSender = require("../controllers/email/emailSender");
 
 const userController = {
     addUser: async (req, res) => {
+        console.log(req.body);
         try {
+            
+
+            // if(req.body.password != req.body.rePassword){
+            //   return  res.render("register", {
+            //         mess : "Password and repeat password did not match"
+            //     });
+            // }
 
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(req.body.password, salt);
 
+            
             const newUser = await new UserAccount({
                 email: req.body.email,
                 avatar: req.body.avatar,
@@ -358,6 +367,9 @@ const userController = {
 
                         const { password, username, ...others } = user._doc;
                         const fullToken = `Bearer ${tokenAccess}`
+
+                        
+
                         res.status(200).json({
                             "success": true,
                             "data": {
