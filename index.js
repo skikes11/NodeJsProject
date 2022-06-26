@@ -14,6 +14,8 @@ mongoose.connect((process.env.MONGODB_URL),()=>{
 });
 
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 //Static files
 app.use(express.static(__dirname + '/public'));

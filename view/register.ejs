@@ -33,12 +33,17 @@
                     <input  type="file" id ="avatar" name="avatar" /><br /><br />
 
                 </div>
-
-                <form  action="./addUser" class="login100-form validate-form" method="post">
+                
+                <form  action="/api/users/addUser" class="login100-form validate-form" method="post">
                     <span class="login100-form-title">
                         Register
                     </span>
                     
+                    <%if (mess) { %>
+                       <h6 style="color: red;">  <%= mess  %>  </h6>
+                        <% } %>
+
+
                     <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
                         <input class="input100" type="email" name="email" placeholder="Email">
                         <span class="focus-input100"></span>
@@ -83,8 +88,6 @@
                         <label for="birthday">Birthday:</label>
                         <input type="date" id="dob" name="dob">
                     </div>
-
-
 
                     <div class="container-login100-form-btn">
                         <button type="submit" class="login100-form-btn">

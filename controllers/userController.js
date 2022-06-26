@@ -1,7 +1,5 @@
-const { hashSync } = require("bcryptjs");
 const { UserAccount, Userrole } = require("../model/userModel");
-const bcrypt = require('bcryptjs');
-const { boolean } = require("joi");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const e = require("express");
 const logger = require("../controllers/logger/winstonLogger");
@@ -13,11 +11,11 @@ const userController = {
         try {
             
 
-            // if(req.body.password != req.body.rePassword){
-            //   return  res.render("register", {
-            //         mess : "Password and repeat password did not match"
-            //     });
-            // }
+            if(req.body.password != req.body.rePassword){
+              return  res.render("register", {
+                    mess :  " Password and repeat password did not match "
+                });
+            }
 
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(req.body.password, salt);
@@ -368,24 +366,15 @@ const userController = {
                         const { password, username, ...others } = user._doc;
                         const fullToken = `Bearer ${tokenAccess}`
 
-                        
 
-                        res.status(200).json({
-                            "success": true,
-                            "data": {
-                                ...others,
-                                fullToken
-                            }
-                        });
-
-
-                        logger.info({
-                            "success": true,
-                            "data": {
-                                ...others,
-                                fullToken
-                            }
+                        console.log({
+                            ...others
                         })
+
+                        res.render("userProfile",{
+                            user : {...others}
+                        })
+                        
 
                     }
                 }

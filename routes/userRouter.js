@@ -8,7 +8,7 @@ const logger = require("../controllers/logger/winstonLogger");
 
 
 //User login View
-userRouter.get("/login",function(req,res){
+userRouter.get("/home",function(req,res){
     res.render("index");
 })
 
@@ -20,7 +20,7 @@ userRouter.get("/forgot-password",function(req,res){
 // Register View
 
 userRouter.get("/register",function(req,res){
-    res.render("register");
+    res.render("register",{mess : ""});
 })
 
 
