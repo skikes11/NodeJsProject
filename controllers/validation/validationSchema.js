@@ -1,5 +1,4 @@
 const joi = require("joi");
-
 const schema = { 
       user : joi.object({
         email: joi.string().email().min(6).max(50).required(),

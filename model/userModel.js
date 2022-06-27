@@ -2,42 +2,41 @@ const { defaults } = require("joi");
 const mongoose = require("mongoose");
 
 const userAccountSchema = new mongoose.Schema({
-        email:{
-            type: String,
-            required: true
-        
-        },
-        name: {
-            type: String,
-            require:true
-        },
-        avatar: {
-            type: String
-        },
-        password: {
-            type: String,
-            require:true
-        },
-        role: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref : 'Userrole',
-            default : null
-        },
-        active :{
-            type : Boolean,
-            default: false     
-        },
-        profile: {
-            dob: {
-                type: Date,
-              //  default : "null"
-            },
-            phone: {
-                type: String,
-         //       default : "null"
-            },
-           
-        }
+    email: {
+        type: String,
+        required: true
+
+    },
+    name: {
+        type: String,
+        require: true
+    },
+    avatar: {
+        type: String
+    },
+    password: {
+        type: String,
+        require: true
+    },
+    role: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Userrole',
+        default: null
+    },
+    active: {
+        type: Boolean,
+        default: false
+    },
+    dob: {
+        type: Date,
+        //  default : "null"
+    },
+    phone: {
+        type: String,
+        //       default : "null"
+    },
+
+
 });
 
 const userroleSchema = new mongoose.Schema({
@@ -51,4 +50,4 @@ const userroleSchema = new mongoose.Schema({
 let UserAccount = mongoose.model("UserAccount", userAccountSchema);
 let Userrole = mongoose.model("Userrole", userroleSchema);
 
-module.exports = {UserAccount, Userrole};
+module.exports = { UserAccount, Userrole };

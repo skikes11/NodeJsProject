@@ -29,27 +29,52 @@
 		<div class="container-login100">
 			<div class="wrap-login100">
 				<div class="login100-pic js-tilt" data-tilt>
-					<img src="/images/img-user-res.png" alt="IMG">
+
+					<%	if(user.avatar) { %>
+						<img src="/images/img-user-res.png" alt="IMG">
+						<% }else { %>
+						<img src = <%=user.avatar %> alt="IMG">
+						<% } %>
+
+						<h3 > <%=user.avatar %>  </h3>>
+					
 				</div>
 
-				<form class="login100-form validate-form">
+				<form class="profile-form">
 					<span class="login100-form-title">
 						User profile
 					</span>
 
-					<div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-						<h6 class="input100" type="text" name="email"> <b> Email:  </b> <%= user.email %>  </h6>
+					<div class="wrap-input100">
+						<h6 style="text-align: center;" class="input100" type="text" name="email">  <%= user.email %>  </h6>
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
-							<i class="fa fa-envelope" aria-hidden="true"></i>
+							<b> Email  </b>
 						</span>
 					</div>
 
-					<div class="wrap-input100 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass" placeholder="Password">
+					<div class="wrap-input100">
+						<h6 style="text-align: center;" class="input100" type="text" name="name">  <%= user.name %>  </h6>
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
-							<i class="fa fa-lock" aria-hidden="true"></i>
+							<b> Name  </b>
+						</span>
+					</div>
+					
+					
+					<div class="wrap-input100">
+						<h6 style="text-align: center;" class="input100" type="text" name="phone">  <%= user.phone %>  </h6>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<b> Phone  </b>
+						</span>
+					</div>
+
+					<div class="wrap-input100">
+						<h6 style="text-align: center;" class="input100" type="text" name="email">  <%= user.dob %>  </h6>
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<b> Dob  </b>
 						</span>
 					</div>
 

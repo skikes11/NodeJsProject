@@ -2,8 +2,10 @@ const userRouter = require("express").Router();
 const middlewareController = require("../controllers/middlewareController");
 const { getAllUser } = require("../controllers/userController");
 const userController = require("../controllers/userController");
-const userValidateRegister = require("../controllers/validation/userValidateRegister");
+const userValidate = require("../controllers/validation/userValidateRegister");
 const logger = require("../controllers/logger/winstonLogger");
+
+
 
 
 
@@ -43,18 +45,15 @@ userRouter.get("/verify-account-completed",function(req,res){
     res.render("verifyAccountCompleted");
 })
 
-
-
-
 //Add User 
-userRouter.post("/addUser", async(req,res)=>{
-    console.log(req.body);
-    await userController.addUser(req,res);
+userRouter.post("/addUser", userValidate.validatePassword, middlewareController.validateCheckExistedEmail, middlewareController.uploadFileImage().single("avatar"),async(req,res)=>{
+    console.log(req.file.filename);
+    userController.addUser(req,res);
 });
 
 //AddRole
 userRouter.post("/r2", async(req,res)=>{
-    const user = await middlewareController.verifyToken(req,res)
+    const user = await middlewareController.verifyToken(req,res);
     console.log(user)
     if (!user){
         return res.status(401).json({

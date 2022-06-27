@@ -1,5 +1,5 @@
 const { UserAccount, Userrole } = require("../model/userModel");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const e = require("express");
 const logger = require("../controllers/logger/winstonLogger");
@@ -10,26 +10,21 @@ const userController = {
         console.log(req.body);
         try {
             
-
-            if(req.body.password != req.body.rePassword){
-              return  res.render("register", {
-                    mess :  " Password and repeat password did not match "
-                });
-            }
-
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(req.body.password, salt);
 
             
             const newUser = await new UserAccount({
                 email: req.body.email,
-                avatar: req.body.avatar,
-                username: req.body.username,
+                name: req.body.name,
                 password: hashPass,
                 phone: req.body.phone,
                 dob: req.body.dob,
 
             });
+
+            newUser.avatar = `/static/images/avatar/${req.file.filename}`
+
 
             const tokenActivate = jwt.sign({
                 id: newUser._id
@@ -45,7 +40,7 @@ const userController = {
 
             Iuser = await Userrole.findOne({ name: new RegExp('^' + "user" + '$', "i") });
             newUser.role = Iuser._id;
-            console.log(Iuser._id);
+            console.log(newUser);
 
             EmailSender(res, newUser.email, "Active Your Account", content);
             await newUser.save();
@@ -363,7 +358,7 @@ const userController = {
                             expiresIn: "2h"
                         });
 
-                        const { password, username, ...others } = user._doc;
+                        const { password, ...others } = user._doc;
                         const fullToken = `Bearer ${tokenAccess}`
 
 

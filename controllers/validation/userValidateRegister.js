@@ -1,7 +1,6 @@
 const schema = require("./validationSchema")
 
-
-module.exports = { 
+const UserValidate = { 
     validateUserregister : async(req,res,next) => { 
          const value = await schema.user.validate(req.body)
          if(value.error){
@@ -12,5 +11,18 @@ module.exports = {
          }else{
             next();
          }
+    },
+    validatePassword : async(req,res,next) =>{
+
+        if(req.body.password != req.body.rePassword){
+            return  res.render("register", {
+                  mess :  " Password and repeat password did not match "
+              });
+        }else{
+            next();
+        }
+
     }
 }
+
+module.exports = UserValidate;
