@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const multer = require('multer');
 const uuid = require('uuid').v4;
-const { UserAccount} = require("../model/userModel");
+const { UserAccount } = require("../model/userModel");
+
 
 
 const middlewareController = {
@@ -28,7 +29,7 @@ const middlewareController = {
     },
     verifyTokenAccount: async (token) => {
         try {
-            
+
             console.log("token: " + token);
             if (token) {
                 const accessToken = token.split(" ")[1];
@@ -46,13 +47,13 @@ const middlewareController = {
             return null;
         }
     },
-    uploadFileImage : function(req,res){
+    uploadFileImage: function (req, res) {
         const storage = multer.diskStorage({
             destination: (req, file, cb) => {
                 cb(null, "public/images/avatar")
             },
             filename: (req, file, cb) => {
-        
+
                 cb(null, `avt-image-${uuid()}.jpg`);
             }
         })
@@ -61,14 +62,15 @@ const middlewareController = {
 
         return upload;
     },
-    validateCheckExistedEmail : async(req,res,next) =>{
+    validateCheckExistedEmail: async (req, res, next) => {
 
-        const user = await UserAccount.findOne({email : req.body.email});
-        if(user){
-            return  res.render("register", { 
-                mess : "Email already in use"
+        const user = await UserAccount.findOne({ email: req.body.email });
+        console.log(req.body.email + "check US" + user);
+        if (user) {
+            return res.render("register", {
+                mess: "Email already in use"
             })
-        }else{
+        } else {
             next();
         }
 

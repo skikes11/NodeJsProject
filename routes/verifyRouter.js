@@ -25,10 +25,26 @@ userRouter.get("/account/:token", async(req,res)=>{
 
 userRouter.get("/reset-password/:token", async(req,res)=>{
     try {
+
+        if(!req.params.token){
+            return res.status(400).json({
+                "message" : "token invalid"
+            })
+        }
+
+        res.render("resetPassword",{
+            token : req.params.token
+        })
+
+    } catch (error) {
+            res.status(404).json(error.message);
+    }
+})
+
+userRouter.post("/reset-passwordV1", async(req,res)=>{
+    try {
         // check token hop le
-        const user = await middlewareController.verifyTokenAccount(req.params.token)
-        console.log(user);
-        console.log(req.params.token);
+        const user = await middlewareController.verifyTokenAccount(req.body.token);
         if (!user){
             return res.status(401).json({
                 "success":false,
@@ -36,8 +52,7 @@ userRouter.get("/reset-password/:token", async(req,res)=>{
             })
         }
 
-        // enable user
-        userController.resetPassword(req,res,user.id) 
+       userController.resetPassword(req,res,user.id);
 
     } catch (error) {
             res.status(404).json(error.message);

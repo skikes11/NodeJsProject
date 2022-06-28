@@ -16,8 +16,17 @@ userRouter.get("/home",function(req,res){
 
 //Forgot Password View
 userRouter.get("/forgot-password",function(req,res){
-    res.render("forgotPassword");
+    res.render("forgotPassword", {
+        mess : ""
+    });
 })
+
+
+//Reset Password Completed View
+userRouter.get("/reset-password-completed",function(req,res){
+    res.render("resetPasswordCompleted")
+})
+
 
 // Register View
 
@@ -40,16 +49,8 @@ userRouter.get("/registration-completed",function(req,res){
 })
 
 
-// Verify Account
-userRouter.get("/verify-account-completed",function(req,res){
-    res.render("verifyAccountCompleted");
-})
-
 //Add User 
-userRouter.post("/addUser", userValidate.validatePassword, middlewareController.validateCheckExistedEmail, middlewareController.uploadFileImage().single("avatar"),async(req,res)=>{
-    console.log(req.file.filename);
-    userController.addUser(req,res);
-});
+userRouter.post("/addUser", middlewareController.validateCheckExistedEmail,userValidate.validatePassword, middlewareController.uploadFileImage().single("avatar"),  userController.addUser);
 
 //AddRole
 userRouter.post("/r2", async(req,res)=>{

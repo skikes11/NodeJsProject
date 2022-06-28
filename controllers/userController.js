@@ -23,8 +23,9 @@ const userController = {
 
             });
 
-            newUser.avatar = `/static/images/avatar/${req.file.filename}`
-
+            if(req.file){    
+                newUser.avatar = `/static/images/avatar/${req.file.filename}`
+            }
 
             const tokenActivate = jwt.sign({
                 id: newUser._id
@@ -44,10 +45,13 @@ const userController = {
 
             EmailSender(res, newUser.email, "Active Your Account", content);
             await newUser.save();
-            res.status(200).json({
-                newUser,
-                tokenActivate
-            });
+            // res.status(200).json({
+            //     newUser,
+            //     tokenActivate
+            // });
+
+            res.render("registrationComplete");
+
         } catch (err) {
             res.status(400).json(err.message);
         }
@@ -68,9 +72,8 @@ const userController = {
         try {
             const user = await UserAccount.findOne({ "email": req.body.email });
             if (!user) {
-                return res.status(404).json({
-                    "success": false,
-                    "message": "did not found email"
+                return res.render("forgotPassword",{
+                    mess : "Invalid Email"
                 })
             } else {
                 console.log("userID: " + user._id);
@@ -87,16 +90,19 @@ const userController = {
                 console.log('URL', URL)
                 const content = `Click <a href = "${URL}" > here  </a> to reset your password`;
 
-                EmailSender(res, req.body.email, "Reset your password", content).then(res.status(200).json({
-                    "suscces": true,
-                    "message": "We have sent email to verify your account, pls check your email"
-                }))
+               await EmailSender(res, req.body.email, "Reset your password", content);
+               res.render("forgotPasswordV1");
+
             }
         } catch (err) {
             res.status(400).json(err.message);
 
         }
     },
+
+
+
+
     resetPassword: async (req, res, id) => {
         try {
             const user = await UserAccount.findById(id);
@@ -120,10 +126,7 @@ const userController = {
                     const newPassword = await bcrypt.hash(req.body.NewPassword, salt);
                     user.password = newPassword;
                     await user.save();
-                    return res.status(403).json({
-                        "success": true,
-                        "message": "Reset password success"
-                    })
+                    res.render("resetPasswordCompleted");
                 } else {
                     return res.status(403).json({
                         "success": false,
@@ -152,11 +155,14 @@ const userController = {
                 user.active = true;
                 console.log("activate: " + user.active)
                 await user.save();
-                res.status(200).json({
-                    "success": true,
-                    "message": "Verify account success",
-                    "data": user
-                });
+                // res.status(200).json({
+                //     "success": true,
+                //     "message": "Verify account success",
+                //     "data": user
+                // });
+
+                res.render("verifyAccountCompleted");
+
             }
 
         } catch (err) {
@@ -362,7 +368,7 @@ const userController = {
                         const fullToken = `Bearer ${tokenAccess}`
 
 
-                        console.log({
+                        console.log("userRender"+{
                             ...others
                         })
 

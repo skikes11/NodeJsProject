@@ -6,6 +6,11 @@ var bodyParser = require("body-parser");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const myRouter = require("./routes");
+const cookieParser = require('cookie-parser');
+
+
+
+
 
 dotenv.config();    
 //connect database
@@ -14,9 +19,12 @@ mongoose.connect((process.env.MONGODB_URL),()=>{
 });
 
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
 
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }))
 //Static files
 app.use(express.static(__dirname + '/public'));
 
@@ -27,7 +35,9 @@ app.set("views","./view");
 
 
 app.use('/static', express.static('public'))
-app.use(bodyParser.json());
+
+
+
 app.use(cors());
 app.use(morgan("common"));  
 

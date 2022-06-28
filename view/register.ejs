@@ -29,71 +29,76 @@
         <div class="container-login100">
             <div class="wrap-login100">
                 <div class="login100-pic js-tilt" data-tilt>
-                    <img src="/images/img-user-res.png" alt="IMG">
-                    <input  type="file" id ="avatar" name="avatar" /><br /><br />
+                    <img id="output" src="/images/img-user-res.png" alt="IMG">
+                    <input accept="image/*" type="file" id="avatar" name="avatar"
+                        onchange="loadFile(event)" /><br /><br />
 
                 </div>
-                
-                <form  action="/api/users/addUser" class="login100-form validate-form" method="post">
+
+                <form action="/api/users/addUser" class="login100-form validate-form" method="post"
+                    enctype="multipart/form-data">
                     <span class="login100-form-title">
                         Register
                     </span>
-                    
+
                     <%if (mess) { %>
-                       <h6 style="color: red;">  <%= mess  %>  </h6>
-                    <% } %>
+                        <h6 style="color: red;">
+                            <%= mess %>
+                        </h6>
+                        <% } %>
 
 
-                    <div class="wrap-input100 validate-input" data-validate="Valid email is required: ex@abc.xyz">
-                        <input class="input100" type="email" name="email" placeholder="Email">
-                        <span class="focus-input100"></span>
-                        <span class="symbol-input100">
-                            <i class="fa fa-envelope" aria-hidden="true"></i>
-                        </span>
-                    </div>
+                            <div class="wrap-input100 validate-input"
+                                data-validate="Valid email is required: ex@abc.xyz">
+                                <input class="input100" type="email" name="email" placeholder="Email">
+                                <span class="focus-input100"></span>
+                                <span class="symbol-input100">
+                                    <i class="fa fa-envelope" aria-hidden="true"></i>
+                                </span>
+                            </div>
 
-                    <div class="wrap-input100 validate-input" data-validate="Password is required">
-                        <input class="input100" type="password" name="password" placeholder="Password">
-                        <span class="focus-input100"></span>
-                        <span class="symbol-input100">
-                            <i class="fa fa-lock" aria-hidden="true"></i>
-                        </span>
-                    </div>
+                            <div class="wrap-input100 validate-input" data-validate="Password is required">
+                                <input class="input100" type="password" name="password" placeholder="Password">
+                                <span class="focus-input100"></span>
+                                <span class="symbol-input100">
+                                    <i class="fa fa-lock" aria-hidden="true"></i>
+                                </span>
+                            </div>
 
-                    <div class="wrap-input100 validate-input" data-validate="Repeat Password is required">
-                        <input class="input100" type="password" name="rePassword" placeholder="Repeat Password">
-                        <span class="focus-input100"></span>
-                        <span class="symbol-input100">
-                            <i class="fa fa-lock" aria-hidden="true"></i>
-                        </span>
-                    </div>
-                    
-                    <!-- <span class="login100-form-title">
+                            <div class="wrap-input100 validate-input" data-validate="Repeat Password is required">
+                                <input class="input100" type="password" name="rePassword" placeholder="Repeat Password">
+                                <span class="focus-input100"></span>
+                                <span class="symbol-input100">
+                                    <i class="fa fa-lock" aria-hidden="true"></i>
+                                </span>
+                            </div>
+
+                            <!-- <span class="login100-form-title">
                         Infor User
                     </span> -->
 
-                    <h3 style="color: black;" > Infor user </h3>
+                            <h3 style="color: black;"> Infor user </h3>
 
-                    <div class="wrap-input100 validate-input" data-validate="Name is required">
-                        <input class="input100" type="text" name="name" placeholder="Name" >
-                        <span class="focus-input100"></span>
-                    </div>
+                            <div class="wrap-input100 validate-input" data-validate="Name is required">
+                                <input class="input100" type="text" name="name" placeholder="Name">
+                                <span class="focus-input100"></span>
+                            </div>
 
-                    <div class="wrap-input100" >
-                        <input class="input100" type="text" name="phone" placeholder="Phone">
-                        <span class="focus-input100"></span>
-                    </div>
+                            <div class="wrap-input100">
+                                <input class="input100" type="text" name="phone" placeholder="Phone">
+                                <span class="focus-input100"></span>
+                            </div>
 
-                    <div class="wrap-input100" >
-                        <label for="birthday">Birthday:</label>
-                        <input type="date" id="dob" name="dob">
-                    </div>
+                            <div class="wrap-input100">
+                                <label for="birthday">Birthday:</label>
+                                <input type="date" id="dob" name="dob">
+                            </div>
 
-                    <div class="container-login100-form-btn">
-                        <button type="submit" class="login100-form-btn">
-                            Sign up
-                        </button>
-                    </div>
+                            <div class="container-login100-form-btn">
+                                <button type="submit" class="login100-form-btn">
+                                    Sign up
+                                </button>
+                            </div>
 
                 </form>
             </div>
@@ -124,7 +129,13 @@
 
 
     <script>
-        document.getElementById("demo").innerHTML = "Hello JavaScript!";
+        var loadFile = function (event) {
+            var output = document.getElementById('output');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = function () {
+                URL.revokeObjectURL(output.src) // free memory
+            }
+        };
     </script>
 
 

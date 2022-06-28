@@ -2,6 +2,7 @@ const schema = require("./validationSchema")
 
 const UserValidate = { 
     validateUserregister : async(req,res,next) => { 
+        console.log("##" + req.body);
          const value = await schema.user.validate(req.body)
          if(value.error){
             res.json({
@@ -12,7 +13,7 @@ const UserValidate = {
             next();
          }
     },
-    validatePassword : async(req,res,next) =>{
+    validatePassword: (req,res,next) =>{
 
         if(req.body.password != req.body.rePassword){
             return  res.render("register", {
