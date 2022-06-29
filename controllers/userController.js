@@ -4,16 +4,75 @@ const jwt = require("jsonwebtoken");
 const e = require("express");
 const logger = require("../controllers/logger/winstonLogger");
 const EmailSender = require("../controllers/email/emailSender");
+const middlewareController = require("./middlewareController");
+const fs = require('fs');
+const { Console } = require("console");
+const { uploadAvatar } = require("./helpers")
+
+
+
+
+
+function isImage(url) {
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+}
+
+function isValidURL(string) {
+    var res = string.match(/(http(s)?:\/\/.)?(www\.)/g);
+    return (res !== null)
+};
+
+function validateURL(link) {
+    if (link.indexOf("http://") == 0 || link.indexOf("https://") == 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+
+
+
+// The link has http or https.
 
 const userController = {
     addUser: async (req, res) => {
-        console.log(req.body);
+        
         try {
-            
+            console.log(req.body);
+            const user = await UserAccount.findOne({ email: req.body.email });
+            console.log(req.body.email + "check US" + user);
+            if (user) {
+                return res.render("register", {
+                    mess: "email already in use"
+                })
+            }
+
+            if (req.body.password != req.body.rePassword) {
+                return res.render("register", {
+                    mess: "password and repeat password did not match"
+                })
+            }
+
+
+
+            await uploadAvatar(req, res, (err) => {
+                if (err) {
+                    console.log(req.body);
+                    return res.status(404).json({
+                        "message": "can not upload file image"
+                    })
+                }
+            })
+
+
+
             const salt = await bcrypt.genSalt(10);
             const hashPass = await bcrypt.hash(req.body.password, salt);
 
-            
+
             const newUser = await new UserAccount({
                 email: req.body.email,
                 name: req.body.name,
@@ -23,8 +82,12 @@ const userController = {
 
             });
 
-            if(req.file){    
+            if (req.file) {
                 newUser.avatar = `/static/images/avatar/${req.file.filename}`
+            } else {
+                if (isImage(req.body.url)) {
+                    newUser.avatar = req.body.url
+                }
             }
 
             const tokenActivate = jwt.sign({
@@ -72,8 +135,8 @@ const userController = {
         try {
             const user = await UserAccount.findOne({ "email": req.body.email });
             if (!user) {
-                return res.render("forgotPassword",{
-                    mess : "Invalid Email"
+                return res.render("forgotPassword", {
+                    mess: "Invalid Email"
                 })
             } else {
                 console.log("userID: " + user._id);
@@ -90,8 +153,8 @@ const userController = {
                 console.log('URL', URL)
                 const content = `Click <a href = "${URL}" > here  </a> to reset your password`;
 
-               await EmailSender(res, req.body.email, "Reset your password", content);
-               res.render("forgotPasswordV1");
+                await EmailSender(res, req.body.email, "Reset your password", content);
+                res.render("forgotPasswordV1");
 
             }
         } catch (err) {
@@ -114,7 +177,7 @@ const userController = {
                 })
             } else {
 
-                if(!req.body.NewPassword || !req.body.reNewPassword){
+                if (!req.body.NewPassword || !req.body.reNewPassword) {
                     return res.status(403).json({
                         "success": false,
                         "message": "you need to fill in require text box"
@@ -224,7 +287,7 @@ const userController = {
 
         }
     },
-    UpdateUserByID: async (req, res, id, authCheck) => {
+    UpdateUserByID: async (req, res, id) => {
         try {
             const user = await UserAccount.findById(id);
             if (!user) {
@@ -238,19 +301,59 @@ const userController = {
             user.phone = req.body.phone;
             user.dob = req.body.dob;
 
-            if (!authCheck && req.body.role) {
-                return res.status(402).json({
-                    "success": false,
-                    "message": "permission denied"
-                })
-            } else {
-                user.role = req.body.role;
-            }
             await user.save();
             res.status(500).json({
                 "success": true,
                 "data": user
             });
+        } catch (err) {
+            res.status(404).json({
+                "success": false,
+                "message": "update user failed",
+                "error": err.message
+            });
+        }
+    },
+    UpdateUserByToken: async (req, res, id) => {
+        try {
+
+            const user = await UserAccount.findById(id);
+
+            if (!user) {
+                return res.status(500).json({
+                    "success": false,
+                    "message": "did not found user"
+                });
+            }
+            user.name = req.body.name;
+            user.phone = req.body.phone;
+            user.dob = req.body.dob;
+
+
+            if (req.file) {
+                if (!validateURL(user.avatar)) {
+                    var oldPath = "." + user.avatar;
+                    var getPath = oldPath.replace('static', 'public')
+                    await fs.unlinkSync(getPath);
+                    console.log("unlink path" + getPath);
+                }
+                user.avatar = `/static/images/avatar/${req.file.filename}`
+            } else {
+                if (isImage(req.body.url)) {
+
+                    if (!validateURL(user.avatar)) {
+                        var oldPath = "." + user.avatar;
+                        var getPath = oldPath.replace('static', 'public')
+                        await fs.unlinkSync(getPath);
+                        console.log("unlink path" + getPath);
+                    }
+
+                    user.avatar = req.body.url
+                }
+            }
+
+            await user.save();
+            res.redirect("./home");
         } catch (err) {
             res.status(404).json({
                 "success": false,
@@ -357,25 +460,37 @@ const userController = {
                             })
                         }
 
+                        //Tao Token
                         const tokenAccess = jwt.sign({
                             id: user._id,
                             role: user.role.name
                         }, process.env.JWT_ACCESS_KEY, {
-                            expiresIn: "2h"
+                            expiresIn: "1d"
                         });
+
+
+
 
                         const { password, ...others } = user._doc;
                         const fullToken = `Bearer ${tokenAccess}`
 
+                        // Luu Token vao Cokie
+                        res.cookie('access_token', fullToken, {
+                            maxAge: 365 * 24 * 60 * 60 * 100, // thời gian sống 
+                            httpOnly: true, // chỉ có http mới đọc được token
+                            //secure: true; //ssl nếu có, nếu chạy localhost thì comment nó lại
+                        })
 
-                        console.log("userRender"+{
+
+
+                        console.log("userRender" + {
                             ...others
                         })
 
-                        res.render("userProfile",{
-                            user : {...others}
+                        res.render("userProfile", {
+                            user: { ...others }
                         })
-                        
+
 
                     }
                 }

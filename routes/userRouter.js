@@ -4,13 +4,38 @@ const { getAllUser } = require("../controllers/userController");
 const userController = require("../controllers/userController");
 const userValidate = require("../controllers/validation/userValidateRegister");
 const logger = require("../controllers/logger/winstonLogger");
+const { UserAccount } = require("../model/userModel");
+const { Console } = require("winston/lib/winston/transports");
 
 
 
 
 
 //User login View
-userRouter.get("/home",function(req,res){
+userRouter.get("/home",async(req,res)=>{
+
+    const token = req.cookies.access_token;
+
+    console.log("token cookie " + token);
+
+    if(token){
+        const user_token = await middlewareController.verifyTokenAccount(token);
+
+        const user = await UserAccount.findById(user_token.id);
+
+
+        console.log("token ++" + user);
+
+        if(user){
+            return res.render("userProfile",{
+                user : user
+            })
+        }
+
+
+    }
+
+
     res.render("index");
 })
 
@@ -50,7 +75,9 @@ userRouter.get("/registration-completed",function(req,res){
 
 
 //Add User 
-userRouter.post("/addUser", middlewareController.validateCheckExistedEmail,userValidate.validatePassword, middlewareController.uploadFileImage().single("avatar"),  userController.addUser);
+userRouter.post("/addUser", (req,res)=>{
+    userController.addUser(req,res);
+});
 
 //AddRole
 userRouter.post("/r2", async(req,res)=>{
@@ -142,15 +169,56 @@ userRouter.put("/v2/:id", async(req,res)=>{
     }
 });
 
+//LOG OUT
+userRouter.get("/logout", async(req,res)=>{
 
+    res.clearCookie('access_token');
+    res.redirect('./home')
 
+});
+
+//Load Profile Update
+userRouter.get("/loadUpdate", async(req,res)=>{
+
+    const token = req.cookies.access_token;
+
+    if(!token){
+        return res.status(403).json({
+            mess : "invalid token access"
+        })
+    }
+
+    const user_token = await middlewareController.verifyTokenAccount(token);
+
+    const user = await UserAccount.findById(user_token.id)
+
+    if(!user){
+        return res.status(403).json({
+            mess : "invalid token access"
+        })
+    }else{
+        res.render("updateUser",{
+            user : user,
+            mess : ""
+        })
+    }
+
+});
 
 //UPDATE USER BY TOKEN
-userRouter.put("/", async(req,res)=>{
-    const user = await middlewareController.verifyToken(req,res);
+userRouter.post("/update", middlewareController.uploadFileImage().single("avatar"),  async(req,res)=>{
+    const token = req.cookies.access_token;
+
+    if(!token){
+        return res.status(403).json({
+            mess : "invalid token access"
+        })
+    }
+
+    const user = await middlewareController.verifyTokenAccount(token);
     console.log(user);
     if(user){
-        userController.UpdateUserByID(req,res,user.id);
+        userController.UpdateUserByToken(req,res,user.id);
     }else{
         res.status(401).json({
             "success":false,

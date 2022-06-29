@@ -59,11 +59,11 @@ const middlewareController = {
         })
 
         const upload = multer({ storage });
-
+        upload.single("avatar")
         return upload;
     },
     validateCheckExistedEmail: async (req, res, next) => {
-
+       
         const user = await UserAccount.findOne({ email: req.body.email });
         console.log(req.body.email + "check US" + user);
         if (user) {
