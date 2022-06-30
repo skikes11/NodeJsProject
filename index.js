@@ -1,4 +1,6 @@
+const passport = require('passport');
 const express = require("express");
+require('./controllers/passport')(passport);
 const cors = require("cors");
 const app = express();
 const mongoose = require("mongoose");
@@ -8,19 +10,20 @@ const dotenv = require("dotenv");
 const myRouter = require("./routes");
 const cookieParser = require('cookie-parser');
 
-
-
-
-
 dotenv.config();    
 //connect database
 mongoose.connect((process.env.MONGODB_URL),()=>{
     console.log("connected database");
 });
 
+<<<<<<< HEAD
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+=======
+// app.use(express.urlencoded({ extended: true }));
+ app.use(express.json());
+>>>>>>> be9feb5 (upgrade login with facebook)
 
 app.use(bodyParser.json());
 app.use(cookieParser());
@@ -32,11 +35,7 @@ app.use(express.static(__dirname + '/public'));
 app.set("view engine", "ejs");
 app.set("views","./view");
 
-
-
 app.use('/static', express.static('public'))
-
-
 
 app.use(cors());
 app.use(morgan("common"));  

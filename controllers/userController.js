@@ -32,6 +32,7 @@ function validateURL(link) {
     }
 }
 
+<<<<<<< HEAD
 
 function checkExistedEmail(req){
    
@@ -39,6 +40,8 @@ function checkExistedEmail(req){
             
 }
 
+=======
+>>>>>>> be9feb5 (upgrade login with facebook)
 function checkPass(req){
     if (req.body.password != req.body.rePassword) {
         return false;
@@ -343,6 +346,13 @@ const userController = {
                 user.avatar = "default"
             }
 
+<<<<<<< HEAD
+=======
+            if(!user.avatar){
+                user.avatar = "default"
+            }
+
+>>>>>>> be9feb5 (upgrade login with facebook)
             if (req.file) {
                 if (!validateURL(user.avatar)&& user.avatar != "default") {
                     var oldPath = "." + user.avatar;
