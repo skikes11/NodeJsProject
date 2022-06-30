@@ -7,7 +7,8 @@ const EmailSender = require("../controllers/email/emailSender");
 const middlewareController = require("./middlewareController");
 const fs = require('fs');
 const { Console } = require("console");
-const { uploadAvatar } = require("./helpers")
+const { uploadAvatar } = require("./helpers");
+const { boolean } = require("joi");
 
 
 
@@ -32,88 +33,96 @@ function validateURL(link) {
 }
 
 
+function checkExistedEmail(req){
+   
+      
+            
+}
 
+function checkPass(req){
+    if (req.body.password != req.body.rePassword) {
+        return false;
+    }
+    return true;
+}
 
 
 // The link has http or https.
 
 const userController = {
     addUser: async (req, res) => {
-        
+
         try {
-            console.log(req.body);
-            const user = await UserAccount.findOne({ email: req.body.email });
-            console.log(req.body.email + "check US" + user);
-            if (user) {
-                return res.render("register", {
-                    mess: "email already in use"
-                })
-            }
 
-            if (req.body.password != req.body.rePassword) {
-                return res.render("register", {
-                    mess: "password and repeat password did not match"
-                })
-            }
+            uploadAvatar(req, res, async(err) => {
+                const user = await UserAccount.findOne({ email: req.body.email });
+                console.log( req.body)
+                console.log("####check Pass : "+checkPass(req))
 
-
-
-            await uploadAvatar(req, res, (err) => {
                 if (err) {
-                    console.log(req.body);
                     return res.status(404).json({
                         "message": "can not upload file image"
                     })
+                }else if(user){
+                    return res.render("register", {
+                        mess : "email already in use"
+                    })
+                }else if(!checkPass(req)){
+                    return res.render("register", {
+                        mess : "password did not match"
+                    })
+                }else {
+ 
+                    const salt = await bcrypt.genSalt(10);
+                    const hashPass = await bcrypt.hash(req.body.password, salt);
+
+
+                    const newUser = await new UserAccount({
+                        email: req.body.email,
+                        name: req.body.name,
+                        password: hashPass,
+                        phone: req.body.phone,
+                        dob: req.body.dob,
+
+                    });
+
+                    if (req.file) {
+                        newUser.avatar = `/static/images/avatar/${req.file.filename}`
+                    } else {
+                        if (isImage(req.body.url)) {
+                            newUser.avatar = req.body.url
+                        }
+                    }
+
+                    const tokenActivate = jwt.sign({
+                        id: newUser._id
+                    }, process.env.JWT_ACCESS_KEY, {
+                        expiresIn: "30m"
+                    });
+
+                    fullTokenActivate = "Bearer " + tokenActivate;
+
+                    const URL = "http://localhost:8000/api/verify/account/" + fullTokenActivate;
+                    console.log('URL', URL)
+                    const content = `Click <a href = "${URL}" > here  </a> to activate your account`;
+
+                    Iuser = await Userrole.findOne({ name: new RegExp('^' + "user" + '$', "i") });
+                    newUser.role = Iuser._id;
+                    console.log(newUser);
+
+                    EmailSender(res, newUser.email, "Active Your Account", content);
+                    await newUser.save();
+                    // res.status(200).json({
+                    //     newUser,
+                    //     tokenActivate
+                    // });
+                    res.render("registrationComplete");
                 }
             })
 
 
 
-            const salt = await bcrypt.genSalt(10);
-            const hashPass = await bcrypt.hash(req.body.password, salt);
-
-
-            const newUser = await new UserAccount({
-                email: req.body.email,
-                name: req.body.name,
-                password: hashPass,
-                phone: req.body.phone,
-                dob: req.body.dob,
-
-            });
-
-            if (req.file) {
-                newUser.avatar = `/static/images/avatar/${req.file.filename}`
-            } else {
-                if (isImage(req.body.url)) {
-                    newUser.avatar = req.body.url
-                }
-            }
-
-            const tokenActivate = jwt.sign({
-                id: newUser._id
-            }, process.env.JWT_ACCESS_KEY, {
-                expiresIn: "30m"
-            });
-
-            fullTokenActivate = "Bearer " + tokenActivate;
-
-            const URL = "http://localhost:8000/api/verify/account/" + fullTokenActivate;
-            console.log('URL', URL)
-            const content = `Click <a href = "${URL}" > here  </a> to activate your account`;
-
-            Iuser = await Userrole.findOne({ name: new RegExp('^' + "user" + '$', "i") });
-            newUser.role = Iuser._id;
-            console.log(newUser);
-
-            EmailSender(res, newUser.email, "Active Your Account", content);
-            await newUser.save();
-            // res.status(200).json({
-            //     newUser,
-            //     tokenActivate
-            // });
-
-            res.render("registrationComplete");
+            
 
         } catch (err) {
             res.status(400).json(err.message);
@@ -330,8 +339,12 @@ const userController = {
             user.dob = req.body.dob;
 
 
+            if(!user.avatar){
+                user.avatar = "default"
+            }
+
             if (req.file) {
-                if (!validateURL(user.avatar)) {
+                if (!validateURL(user.avatar)&& user.avatar != "default") {
                     var oldPath = "." + user.avatar;
                     var getPath = oldPath.replace('static', 'public')
                     await fs.unlinkSync(getPath);
@@ -341,7 +354,7 @@ const userController = {
             } else {
                 if (isImage(req.body.url)) {
 
-                    if (!validateURL(user.avatar)) {
+                    if (!validateURL(user.avatar) && user.avatar != "default" ) {
                         var oldPath = "." + user.avatar;
                         var getPath = oldPath.replace('static', 'public')
                         await fs.unlinkSync(getPath);

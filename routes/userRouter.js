@@ -16,8 +16,6 @@ userRouter.get("/home",async(req,res)=>{
 
     const token = req.cookies.access_token;
 
-    console.log("token cookie " + token);
-
     if(token){
         const user_token = await middlewareController.verifyTokenAccount(token);
 

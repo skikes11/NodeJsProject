@@ -40,7 +40,11 @@
                         Register
                     </span>
 
-
+                    <%if (mess) { %>
+                        <h6 style="color: red; text-align: center;">
+                            <%= mess %>
+                        </h6>
+                        <% } %>
 
 
                     <input accept="image/*" type="file" id="avatar" name="avatar"
@@ -59,11 +63,7 @@
 
 
 
-                    <%if (mess) { %>
-                        <h6 style="color: red;">
-                            <%= mess %>
-                        </h6>
-                        <% } %>
+             
 
 
                             <div class="wrap-input100 validate-input"
